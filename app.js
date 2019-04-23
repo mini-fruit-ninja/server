@@ -8,32 +8,26 @@ server.listen(port)
 let rooms = []
 
 io.on('connection', function(socket) {
-    socket.on("getAllRooms", function() {
-        io.emit("getAllRooms", rooms)
-    })
+  socket.on("getAllRooms", function() {
+    io.emit("getAllRooms", rooms)
+  })
 
-    socket.on("createARoom", function(objRoom) {
-        rooms.unshift(objRoom)
-        io.emit('createARoom', objRoom);
-    })
+  socket.on("createARoom", function (newRoom) {
+    rooms.push(newRoom)
+    io.emit("getAllRooms", rooms)
+  })
 
-    socket.on("joinARoom", function(which) {
+  socket.on("joinARoom", function(which) {
+    let joinedRoomIndex = rooms.findIndex(room => room.id === which.roomId)
+    console.log(joinedRoomIndex);
+    rooms[joinedRoomIndex].players.push(which.player)
+    io.emit("getAllRooms", rooms)
+  })
 
-        let joinedRoomIndex = rooms.findIndex(room => room.id === which.roomId)
-        rooms[joinedRoomIndex].players.push(which.player)
-        console.log(rooms[joinedRoomIndex])
-        io.emit("joinARoom", rooms[joinedRoomIndex])
-        io.emit("getAllRooms", rooms)
-    })
-
-    socket.on("exitFromARoom", function(which) {
-        let joinedRoomIndex = rooms.findIndex(room => room.id === which.roomId)
-        let playerIndex = rooms[joinedRoomIndex].players.findIndex(player => player.id === which.playerId)
-
-        rooms[joinedRoomIndex].players.splice(playerIndex, 1)
-        console.log(rooms[joinedRoomIndex]);
-        io.emit("getAllRooms", rooms)
-    })
+  socket.on("updateScore", function(currentRoom) {
+    rooms = currentRoom
+    io.emit("getAllRooms", rooms)
+  })
 
     socket.on('fruitClicked', function() {
         let fruitAxis = {}
