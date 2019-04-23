@@ -6,6 +6,14 @@ const port = process.env.PORT || 3000
 server.listen(port)
 
 let rooms = []
+let games = {
+    x: 0,
+    y: 0,
+    ctx: '',
+    img: [],
+    ximage: 468,
+    yimage: 210
+}
 
 io.on('connection', function(socket) {
   socket.on("getAllRooms", function() {
